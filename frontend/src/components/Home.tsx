@@ -1,12 +1,42 @@
-import { AppShell } from "@mantine/core";
+import { AppShell, Button, Stack } from '@mantine/core'
+import NavBar from './NavBar'
 
 const Home = () => {
   return (
     <div>
-      <AppShell.Navbar p="md">Navbar</AppShell.Navbar>
-      <div>Home</div>
-    </div>
-  );
-};
+      <AppShell
+        header={{ height: 60 }}
+        navbar={{ width: 300, breakpoint: 'sm' }}
+        padding="md"
+      >
+        <AppShell.Navbar p="md">
+          <Stack gap="xs">
+            <Button variant="subtle" fullWidth style={{ borderBottom: '1px solid #E9ECEF' }}>
+              Role management
+            </Button>
+            <Button variant="subtle" fullWidth style={{ borderBottom: '1px solid #E9ECEF' }}>
+              Single file execution
+            </Button>
+            <Button variant="subtle" fullWidth style={{ borderBottom: '1px solid #E9ECEF' }}>
+              User management
+            </Button>
+            <Button variant="subtle" fullWidth style={{ borderBottom: '1px solid #E9ECEF' }}>
+              Statistics
+            </Button>
+            <Button variant="subtle" fullWidth style={{ borderBottom: '1px solid #E9ECEF' }}>
+              Jobs
+            </Button>
+          </Stack>
+        </AppShell.Navbar>
+        <AppShell.Header>
+          <NavBar />
+        </AppShell.Header>
+        <AppShell.Main>
 
-export default Home;
+        </AppShell.Main>
+      </AppShell>
+    </div>
+  )
+}
+
+export default Home
