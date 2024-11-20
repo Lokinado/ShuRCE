@@ -1,45 +1,87 @@
 import { Alert, Button, Center, Paper, PasswordInput, Stack, Text, TextInput } from '@mantine/core'
 import { IconAlertCircle } from '@tabler/icons-react'
 import { useState } from 'react'
+import { login } from '../state/auth/AuthSlice'
+import { useDispatch } from 'react-redux'
+import { fetchClient } from '../openapi-client'
 
 const Login = () => {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [detail, setDetail] = useState<string | null>(null)
+  const dispatch = useDispatch();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
 
-    const body = `grant_type=password&username=${email}&password=${password}`
-
-    const request = new Request("/token", {
-      method: "POST",
+    // TODO: Refactor this mess
+    let {
+      data,
+      error,
+    } = await fetchClient.POST("/token", {
       headers: {
-        "Content-Type": "application/x-www-form-urlencoded",
+        'Content-Type': 'application/x-www-form-urlencoded',
       },
-      body: body
+      body: {
+        username: email,
+        password: password,
+        scope: "",
+      },
+      bodySerializer(body) {
+        const payload = {
+          username: body["username"],
+          password: body["password"]
+        }
+        return new URLSearchParams(payload).toString();
+      },
     });
 
-    const response = await fetch(request)
-    const data = await response.json()
+    console.log(data)
+    console.log(error)
 
-    if (!response.ok) {
-      // setDetail('Invalid email or password')
-      return
+    if(data === null){
+      const response = await fetchClient.GET("/users/me/", {});
+      if(response.data){
+        dispatch(login(response.data))
+        return;
+      }
+      data = response.data
+      error = response.error
     }
 
-    console.log(response)
-    console.log(await response.json())
+    if(error) {
+      if(error.detail){
+        if("detail" in error){
+          setDetail(error.detail.toString())
+        } else if(error.detail.length == 1){
+          setDetail(error.detail[0].msg)
+        } else {
+          const errorMessage = ["Found multiple errors:"];
+
+          error.detail.forEach((message)=>{
+            errorMessage.push(message.msg, "\n")
+          })
+
+          setDetail(errorMessage.join(""))
+        }
+      } else {
+        setDetail("Unknown error")
+      }
+      return; 
+    }
+
+
+
+
+    
   }
 
   const handleInputChange = (setter: (value: string) => void) => (e: React.ChangeEvent<HTMLInputElement>) => {
-    // if (detail) {
-      // setDetail(null)
-    // }
-    // console.log(e.target.value)
-    // setter(e.target.value)
+    if (detail) {
+      setDetail(null)
+    }
+    setter(e.target.value)
   }
-  console.log("WTF")
   return (
     <Center h="100vh" bg="var(--mantine-color-gray-0)">
       <Paper 
