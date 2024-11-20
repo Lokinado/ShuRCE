@@ -1,4 +1,7 @@
+from typing import Annotated
+
 from decouple import config
+from fastapi import Depends
 from sqlmodel import Session, SQLModel, create_engine
 
 db_url = config("db_url")
@@ -14,3 +17,6 @@ def create_db_and_tables():
 def get_session():
     with Session(engine) as session:
         yield session
+
+
+NewSession = Annotated[Session, Depends(get_session)]

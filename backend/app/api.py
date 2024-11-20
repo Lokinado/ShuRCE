@@ -1,24 +1,26 @@
 from contextlib import asynccontextmanager
-from datetime import timedelta
 from typing import Annotated
 
 from fastapi import Depends, FastAPI
 from fastapi.security import OAuth2PasswordRequestForm
-from sqlmodel import Session
+
+from app.seeder import register_seeders
 
 from .auth import (
     authenticate_user,
     create_access_token,
     get_current_user,
     get_password_hash,
+    has_permission_admin,
 )
-from .database import create_db_and_tables, get_session
+from .database import NewSession, create_db_and_tables
 from .exceptions import incorrect_username_or_password
-from .models import Token, User, UserCreate, UserPublic
+from .models import Role, RoleCreate, RolePublic, Token, User, UserCreate, UserPublic
 
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
+    register_seeders()
     create_db_and_tables()
     yield
 
@@ -31,8 +33,9 @@ async def read_root() -> dict:
     return {"message": "Welcome to your blog!"}
 
 
+# TODO: Only somebody with permission add users should be able to add roles
 @app.post("/users/", response_model=UserPublic)
-def register_user(session: Annotated[Session, Depends(get_session)], user: UserCreate):
+def register_user(session: NewSession, user: UserCreate):
     hashed_password = get_password_hash(user.password)
     extra_data = {"hashed_password": hashed_password}
     db_user = User.model_validate(user, update=extra_data)
@@ -42,20 +45,35 @@ def register_user(session: Annotated[Session, Depends(get_session)], user: UserC
     return db_user
 
 
-@app.post("/token")
-async def login_for_access_token(
-    session: Annotated[Session, Depends(get_session)],
-    form_data: Annotated[OAuth2PasswordRequestForm, Depends()],
-) -> Token:
-    user = authenticate_user(session, form_data.username, form_data.password)
-    if not user:
-        raise incorrect_username_or_password
-    access_token = create_access_token(data={"sub": user.email})
-    return Token(access_token=access_token, token_type="bearer")
-
-
 @app.get("/users/me/", response_model=UserPublic)
 async def read_users_me(
     current_user: Annotated[User, Depends(get_current_user)],
 ):
     return current_user
+
+
+@app.post("/token")
+async def login_for_access_token(
+    session: NewSession,
+    form_data: Annotated[OAuth2PasswordRequestForm, Depends()],
+) -> Token:
+    user = authenticate_user(session, form_data.username, form_data.password)
+    if not user:
+        raise incorrect_username_or_password
+    access_token = create_access_token(data={"sub": str(user.id)})
+    return Token(access_token=access_token, token_type="bearer")
+
+
+# TODO: Only somebody with permission create roles should be able to add roles
+@app.post("/roles/", response_model=RolePublic)
+def register_role(session: NewSession, role: RoleCreate):
+    db_role = Role.model_validate(role)
+    session.add(db_role)
+    session.commit()
+    session.refresh(db_role)
+    return db_role
+
+
+@app.post("/role_test/")
+def quick_test(user: Annotated[User, Depends(has_permission_admin)]):
+    return {f"message": "Welcome to your blog! {user.id}"}

@@ -11,3 +11,8 @@ incorrect_username_or_password = HTTPException(
     detail="Incorrect username or password",
     headers={"WWW-Authenticate": "Bearer"},
 )
+
+insufficient_permissions = HTTPException(
+    status_code=status.HTTP_401_UNAUTHORIZED,
+    detail="Insufficient permissions",
+)
