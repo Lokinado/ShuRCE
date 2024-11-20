@@ -51,10 +51,7 @@ class RoleCreate(RoleBase):
 
 
 class UserBase(SQLModel):
-    # email: Email = Field(
-    #     index=True, nullable=False, unique=True, min_length=3, max_length=64
-    # )
-    email: str = Field(
+    email: Email = Field(
         index=True, nullable=False, unique=True, min_length=3, max_length=64
     )
 
@@ -89,11 +86,14 @@ class UserPublic(UserBase):
 
 
 class UserCreate(UserBase):
-    # email: Email
-    # password: Password
-    email: str
-    password: str
+    email: Email
+    password: Password
     role_id: UUID | None
+
+
+class UserLogin(UserBase):
+    email: Email
+    password: Password
 
 
 class Token(BaseModel):
