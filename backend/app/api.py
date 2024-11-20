@@ -1,7 +1,7 @@
 from contextlib import asynccontextmanager
 from typing import Annotated
 
-from fastapi import Depends, FastAPI
+from fastapi import Depends, FastAPI, Response
 from fastapi.security import OAuth2PasswordRequestForm
 
 from app.seeder import register_seeders
@@ -54,14 +54,18 @@ async def read_users_me(
 
 @app.post("/token")
 async def login_for_access_token(
+    response: Response,
     session: NewSession,
     form_data: Annotated[OAuth2PasswordRequestForm, Depends()],
-) -> Token:
+):
     user = authenticate_user(session, form_data.username, form_data.password)
     if not user:
         raise incorrect_username_or_password
-    access_token = create_access_token(data={"sub": str(user.id)})
-    return Token(access_token=access_token, token_type="bearer")
+    access_token = create_access_token(data={"sub": str(user.id)}).decode("utf-8")
+    response.set_cookie(
+        key="access_token", value=f"Bearer {access_token}", httponly=True
+    )
+    return
 
 
 # TODO: Only somebody with permission create roles should be able to add roles
