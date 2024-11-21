@@ -1,5 +1,9 @@
-import { AppShell, Button, Stack } from '@mantine/core'
+import { AppShell, Stack } from '@mantine/core'
 import NavBar from './NavBar'
+import { Route, Routes } from 'react-router-dom'
+import ExecutionTemplates from './ExecutionTemplates'
+import StyledLink from './StyledLink'
+import { IconTemplate } from '@tabler/icons-react'
 
 const Home = () => {
   return (
@@ -9,30 +13,22 @@ const Home = () => {
         navbar={{ width: 300, breakpoint: 'sm' }}
         padding="md"
       >
-        <AppShell.Navbar p="md">
+        <AppShell.Navbar>
           <Stack gap="xs">
-            <Button variant="subtle" fullWidth style={{ borderBottom: '1px solid #E9ECEF' }}>
-              Role management
-            </Button>
-            <Button variant="subtle" fullWidth style={{ borderBottom: '1px solid #E9ECEF' }}>
-              Single file execution
-            </Button>
-            <Button variant="subtle" fullWidth style={{ borderBottom: '1px solid #E9ECEF' }}>
-              User management
-            </Button>
-            <Button variant="subtle" fullWidth style={{ borderBottom: '1px solid #E9ECEF' }}>
-              Statistics
-            </Button>
-            <Button variant="subtle" fullWidth style={{ borderBottom: '1px solid #E9ECEF' }}>
-              Jobs
-            </Button>
+            <StyledLink Icon={IconTemplate} to="execution-templates" text="Execution Templates"/>
+            <StyledLink Icon={IconTemplate} to="aaaa" text="Execution Templates"/>
+            <StyledLink Icon={IconTemplate} to="bbbb" text="Execution Templates"/>
+            <StyledLink Icon={IconTemplate} to="cccc" text="Execution Templates"/>
           </Stack>
         </AppShell.Navbar>
         <AppShell.Header>
           <NavBar />
         </AppShell.Header>
         <AppShell.Main>
-
+            <Routes>
+              <Route path="/" element={<>Hello World!</>}/>
+              <Route path="/execution-templates" element={<ExecutionTemplates />}/>
+            </Routes>
         </AppShell.Main>
       </AppShell>
     </div>

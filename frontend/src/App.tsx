@@ -7,20 +7,9 @@ import { useDispatch, useSelector } from 'react-redux'
 import { useEffect, useState } from 'react'
 import { fetchClient } from './openapi-client'
 import { login } from './state/auth/AuthSlice'
+import { BrowserRouter } from 'react-router-dom'
 
-const theme = createTheme({
-  primaryColor: 'blue',
-
-  // You can customize these values based on your needs
-  colors: {
-
-    // Add custom colors if needed
-  },
-  fontFamily: 'Your preferred font, sans-serif',
-  defaultRadius: 'md'
-
-  // Add more theme customizations as needed
-})
+const theme = createTheme({})
 
 const App = () => {
   const [isLoading, setLoading] = useState(true);
@@ -33,7 +22,6 @@ const App = () => {
         setLoading(false)
       }
       if(value.data){
-        console.log(value.data)
         setLoading(false)
         dispatch(login(value.data))
       }
@@ -44,9 +32,11 @@ const App = () => {
     return(<>Loading...</>) // TODO: Add loading gif component
   } else {
     return (
-      <MantineProvider theme={theme} defaultColorScheme="light">
-        {isLoggedIn ? <Home /> : <Login />}
-      </MantineProvider>
+      <BrowserRouter basename="/">
+        <MantineProvider theme={theme} defaultColorScheme="light">
+          {isLoggedIn ? <Home /> : <Login />}
+        </MantineProvider>
+      </BrowserRouter>
     )
   }
 }
