@@ -36,9 +36,6 @@ const Login = () => {
       },
     });
 
-    console.log(data)
-    console.log(error)
-
     if(data === null){
       const response = await fetchClient.GET("/users/me/", {});
       if(response.data){
@@ -69,11 +66,6 @@ const Login = () => {
       }
       return; 
     }
-
-
-
-
-    
   }
 
   const handleInputChange = (setter: (value: string) => void) => (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -82,6 +74,7 @@ const Login = () => {
     }
     setter(e.target.value)
   }
+  
   return (
     <Center h="100vh" bg="var(--mantine-color-gray-0)">
       <Paper 
