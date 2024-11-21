@@ -1,10 +1,11 @@
-import { Container, Group, Text } from '@mantine/core'
+import { Container, Group, Stack, Text } from '@mantine/core'
+import { RootState } from '../state/store';
+import { useSelector } from 'react-redux';
 
 const NavBar = () => {
 
   // This is a placeholder - later you'll want to get this from your Redux store
-  const isLoggedIn = true
-  const username = 'Admin'
+  const user = useSelector((state: RootState) => state.user);
 
   return (
     <Container size="xl" h="100%">
@@ -13,11 +14,14 @@ const NavBar = () => {
           ShuRCE
         </Text>
 
-        {isLoggedIn && 
+        <Stack justify="center" gap={0}>
           <Text size="sm">
-            {username}
+            Welcome <b>{user?.email}!</b>
           </Text>
-        }
+          <Text size="sm">
+            Role: <b>{user?.role?.name}</b>
+          </Text>
+        </Stack>
       </Group>
     </Container>
   )
