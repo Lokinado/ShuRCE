@@ -5,7 +5,7 @@ import { useSelector } from 'react-redux';
 const NavBar = () => {
 
   // This is a placeholder - later you'll want to get this from your Redux store
-  const user = useSelector((state: RootState) => state.user);
+  const user = useSelector((state: RootState) => state.authReducer.user);
 
   return (
     <Container size="xl" h="100%">

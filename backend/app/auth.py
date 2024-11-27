@@ -101,7 +101,7 @@ async def get_current_user(
         raise credentials_exception
 
 
-class PermissionChecker:
+class Has:
     def __init__(self, permission: Permission):
         self.permission = permission
 
@@ -111,6 +111,3 @@ class PermissionChecker:
                 return user
         # TODO: CREATE SENSIBLE EXCEPTIONS
         raise insufficient_permissions
-
-
-has_permission_admin = PermissionChecker(Permission.admin)

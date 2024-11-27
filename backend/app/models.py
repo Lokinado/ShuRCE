@@ -3,15 +3,20 @@ from enum import Enum
 from typing import Annotated, List, Optional
 from uuid import UUID, uuid4
 
+from fastapi import File, UploadFile
 from pydantic import BaseModel
-from sqlalchemy import JSON, TIMESTAMP, Column, text
-from sqlmodel import Field, Relationship, SQLModel
+from sqlalchemy import JSON, TIMESTAMP, text
+from sqlmodel import Column, Field, LargeBinary, Relationship, SQLModel
 
 from .validators import Email, Password
 
 
 class Permission(str, Enum):
     admin = "admin"
+    get_all_users = "get_all_users"
+    get_all_roles = "get_all_roles"
+    create_templates = "create_templates"
+    get_all_templates = "get_all_templates"
 
 
 class RoleBase(SQLModel):
@@ -99,3 +104,38 @@ class UserLogin(UserBase):
 class Token(BaseModel):
     access_token: str
     token_type: str
+
+
+class ExecutionTemplateBase(SQLModel):
+    name: str = Field(index=True, nullable=False, min_length=3, max_length=15)
+
+
+class ExecutionTemplate(ExecutionTemplateBase, table=True):
+    id: UUID = Field(default_factory=uuid4, primary_key=True)
+    compressed_dockerfile: bytes = Field(sa_column=Column(LargeBinary))
+    date_created: Optional[datetime] = Field(
+        default=None,
+        sa_column=Column(
+            TIMESTAMP(timezone=True),
+            nullable=False,
+            server_default=text("CURRENT_TIMESTAMP"),
+        ),
+    )
+    date_updated: Optional[datetime] | None = Field(
+        default=None,
+        sa_column=Column(
+            TIMESTAMP(timezone=True),
+            nullable=False,
+            server_default=text("CURRENT_TIMESTAMP"),
+            server_onupdate=text("CURRENT_TIMESTAMP"),
+        ),
+    )
+
+
+class ExecutionTemplateCreate(ExecutionTemplateBase):
+    pass
+
+
+class ExecutionTemplatePublic(ExecutionTemplateBase):
+    id: UUID
+    date_created: datetime

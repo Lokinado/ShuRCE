@@ -8,7 +8,18 @@ from .database import engine
 
 INITIAL_DATA = {
     "user": [UserCreate(email="Admin", password="root", role_id=None)],
-    "role": [RoleCreate(name="Admin", permissions=[Permission.admin])],
+    "role": [
+        RoleCreate(
+            name="Admin",
+            permissions=[
+                Permission.admin,
+                Permission.get_all_roles,
+                Permission.get_all_users,
+                Permission.create_templates,
+                Permission.get_all_templates,
+            ],
+        )
+    ],
 }
 
 

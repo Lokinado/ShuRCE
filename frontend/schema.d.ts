@@ -21,7 +21,7 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/users/": {
+    "/users/register": {
         parameters: {
             query?: never;
             header?: never;
@@ -31,7 +31,24 @@ export interface paths {
         get?: never;
         put?: never;
         /** Register User */
-        post: operations["register_user_users__post"];
+        post: operations["register_user_users_register_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/users/all": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Get All Users */
+        post: operations["get_all_users_users_all_post"];
         delete?: never;
         options?: never;
         head?: never;
@@ -72,7 +89,7 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/roles/": {
+    "/roles/create": {
         parameters: {
             query?: never;
             header?: never;
@@ -82,14 +99,14 @@ export interface paths {
         get?: never;
         put?: never;
         /** Register Role */
-        post: operations["register_role_roles__post"];
+        post: operations["register_role_roles_create_post"];
         delete?: never;
         options?: never;
         head?: never;
         patch?: never;
         trace?: never;
     };
-    "/role_test/": {
+    "/roles/all": {
         parameters: {
             query?: never;
             header?: never;
@@ -98,8 +115,59 @@ export interface paths {
         };
         get?: never;
         put?: never;
-        /** Quick Test */
-        post: operations["quick_test_role_test__post"];
+        /** Get All Roles */
+        post: operations["get_all_roles_roles_all_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/templates/create": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Create Execution Template */
+        post: operations["create_execution_template_templates_create_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/templates/all": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get All Roles */
+        get: operations["get_all_roles_templates_all_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/docker-file-upload-tester": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Main */
+        get: operations["main_docker_file_upload_tester_get"];
+        put?: never;
+        post?: never;
         delete?: never;
         options?: never;
         head?: never;
@@ -110,6 +178,16 @@ export interface paths {
 export type webhooks = Record<string, never>;
 export interface components {
     schemas: {
+        /** Body_create_execution_template_templates_create_post */
+        Body_create_execution_template_templates_create_post: {
+            /** Name */
+            name: string;
+            /**
+             * Dockerfile
+             * Format: binary
+             */
+            dockerfile: string;
+        };
         /** Body_login_for_access_token_token_post */
         Body_login_for_access_token_token_post: {
             /** Grant Type */
@@ -128,6 +206,21 @@ export interface components {
             /** Client Secret */
             client_secret?: string | null;
         };
+        /** ExecutionTemplatePublic */
+        ExecutionTemplatePublic: {
+            /** Name */
+            name: string;
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /**
+             * Date Created
+             * Format: date-time
+             */
+            date_created: string;
+        };
         /** HTTPValidationError */
         HTTPValidationError: {
             /** Detail */
@@ -135,10 +228,9 @@ export interface components {
         };
         /**
          * Permission
-         * @constant
          * @enum {string}
          */
-        Permission: "admin";
+        Permission: "admin" | "get_all_users" | "get_all_roles" | "create_templates" | "get_all_templates";
         /** RoleCreate */
         RoleCreate: {
             /** Name */
@@ -157,13 +249,6 @@ export interface components {
              * Format: uuid
              */
             id: string;
-        };
-        /** Token */
-        Token: {
-            /** Access Token */
-            access_token: string;
-            /** Token Type */
-            token_type: string;
         };
         /** UserCreate */
         UserCreate: {
@@ -223,7 +308,7 @@ export interface operations {
             };
         };
     };
-    register_user_users__post: {
+    register_user_users_register_post: {
         parameters: {
             query?: never;
             header?: never;
@@ -252,6 +337,26 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    get_all_users_users_all_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["UserPublic"][];
                 };
             };
         };
@@ -295,7 +400,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["Token"];
+                    "application/json": unknown;
                 };
             };
             /** @description Validation Error */
@@ -309,7 +414,7 @@ export interface operations {
             };
         };
     };
-    register_role_roles__post: {
+    register_role_roles_create_post: {
         parameters: {
             query?: never;
             header?: never;
@@ -342,7 +447,80 @@ export interface operations {
             };
         };
     };
-    quick_test_role_test__post: {
+    get_all_roles_roles_all_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["RolePublic"][];
+                };
+            };
+        };
+    };
+    create_execution_template_templates_create_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "multipart/form-data": components["schemas"]["Body_create_execution_template_templates_create_post"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ExecutionTemplatePublic"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    get_all_roles_templates_all_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ExecutionTemplatePublic"][];
+                };
+            };
+        };
+    };
+    main_docker_file_upload_tester_get: {
         parameters: {
             query?: never;
             header?: never;

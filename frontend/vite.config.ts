@@ -7,7 +7,8 @@ export default defineConfig({
   server:{
     proxy:{
       '/token': 'http://0.0.0.0:8081',
-      '/users': 'http://0.0.0.0:8081'
+      '/users': 'http://0.0.0.0:8081',
+      '/templates': 'http://0.0.0.0:8081'
     }
   }
 })

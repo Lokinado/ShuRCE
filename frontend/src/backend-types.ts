@@ -1,5 +1,5 @@
-import type { paths, components } from "./../schema";
-
-export type Token = components["schemas"]["Token"];
+import type { components } from "./../schema";
 
 export type UserPublic = components["schemas"]["UserPublic"];
+
+export type ExecutionTemplatePublic = components["schemas"]["ExecutionTemplatePublic"];
