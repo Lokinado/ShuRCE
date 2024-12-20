@@ -4,7 +4,7 @@ import { notifications } from '@mantine/notifications';
 import { useDispatch, useSelector } from 'react-redux';
 import { update } from '../state/execution-templates/TemplatesSlice';
 import { RootState } from '../state/store';
-import { FileInput, Group, Modal, Table, TextInput } from '@mantine/core';
+import { Checkbox, FileInput, Group, Modal, Table, TextInput, Tooltip } from '@mantine/core';
 import { Button } from '@mantine/core';
 import { useDisclosure } from '@mantine/hooks';
 
@@ -19,8 +19,7 @@ const ExecutionTemplates = () => {
   const dispatch = useDispatch();
 
   useEffect(()=>{
-    console.log("Try to fetch templates")
-    fetchClient.GET("/templates/all", {}).then((value) =>{
+    fetchClient.GET("/templates/my", {}).then((value) =>{
       if(value.error){
         setLoading(false)
         notifications.show({
@@ -63,8 +62,6 @@ const ExecutionTemplates = () => {
       setNameError('Name must be at most 15 characters long')
       invalid = true;
     }
-
-    console.log(dockerfileError, nameError)
 
     if(invalid) return;
 
@@ -165,11 +162,19 @@ const ExecutionTemplates = () => {
               description="Specify how ShuRCE should prepare execution environment"
               placeholder="Choose Dockerfile"
             />
+            <Tooltip label="Global execution templates could be accessed by anyone with get global templates permission">
+              <Checkbox
+                name="is_global"
+                label="Is global"
+                mt={'md'}
+              />
+            </Tooltip>
             <Group justify="flex-end" mt="md">
               <Button type="submit">Create</Button>
             </Group>
           </form>
         </Modal>
+        {templates.length === 0 ? <Group justify='center'>There are no execution templates available. Add execution template with button above.</Group> : 
         <Table>
           <Table.Thead>
             <Table.Tr>
@@ -180,7 +185,7 @@ const ExecutionTemplates = () => {
             </Table.Tr>
           </Table.Thead>
           <Table.Tbody>{rows}</Table.Tbody>
-        </Table>
+        </Table>}
       </div>
     )
   }
