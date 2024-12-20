@@ -9,7 +9,8 @@ export default defineConfig({
       '/token': 'http://0.0.0.0:8081',
       '/users': 'http://0.0.0.0:8081',
       '/templates': 'http://0.0.0.0:8081',
-      '/jobs': 'http://0.0.0.0:8081'
+      '/jobs': 'http://0.0.0.0:8081',
+      '/roles': 'http://0.0.0.0:8081'
     }
   }
 })
