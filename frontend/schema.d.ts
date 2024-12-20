@@ -98,8 +98,8 @@ export interface paths {
         };
         get?: never;
         put?: never;
-        /** Register Role */
-        post: operations["register_role_roles_create_post"];
+        /** Create Role */
+        post: operations["create_role_roles_create_post"];
         delete?: never;
         options?: never;
         head?: never;
@@ -140,15 +140,15 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/templates/all": {
+    "/templates/my": {
         parameters: {
             query?: never;
             header?: never;
             path?: never;
             cookie?: never;
         };
-        /** Get All Roles */
-        get: operations["get_all_roles_templates_all_get"];
+        /** Get All Templates */
+        get: operations["get_all_templates_templates_my_get"];
         put?: never;
         post?: never;
         delete?: never;
@@ -157,15 +157,32 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/docker-file-upload-tester": {
+    "/jobs/create": {
         parameters: {
             query?: never;
             header?: never;
             path?: never;
             cookie?: never;
         };
-        /** Main */
-        get: operations["main_docker_file_upload_tester_get"];
+        get?: never;
+        put?: never;
+        /** Create Job */
+        post: operations["create_job_jobs_create_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/jobs/my": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Create Job */
+        get: operations["create_job_jobs_my_get"];
         put?: never;
         post?: never;
         delete?: never;
@@ -182,11 +199,30 @@ export interface components {
         Body_create_execution_template_templates_create_post: {
             /** Name */
             name: string;
+            /** Is Global */
+            is_global: boolean;
             /**
              * Dockerfile
              * Format: binary
              */
             dockerfile: string;
+        };
+        /** Body_create_job_jobs_create_post */
+        Body_create_job_jobs_create_post: {
+            /**
+             * Code File
+             * Format: binary
+             */
+            code_file: string;
+            /** Is Zipped */
+            is_zipped: boolean;
+            /** Contains Dockerfile */
+            contains_dockerfile: boolean;
+            /**
+             * Template Id
+             * Format: uuid
+             */
+            template_id: string;
         };
         /** Body_login_for_access_token_token_post */
         Body_login_for_access_token_token_post: {
@@ -210,6 +246,8 @@ export interface components {
         ExecutionTemplatePublic: {
             /** Name */
             name: string;
+            /** Is Global */
+            is_global: boolean;
             /**
              * Id
              * Format: uuid
@@ -226,11 +264,51 @@ export interface components {
             /** Detail */
             detail?: components["schemas"]["ValidationError"][];
         };
+        /** JobPublic */
+        JobPublic: {
+            status: components["schemas"]["JobStatus"];
+            /** Is Zipped */
+            is_zipped: boolean;
+            /** Contains Dockerfile */
+            contains_dockerfile: boolean;
+            /**
+             * Is Build
+             * @default false
+             */
+            is_build: boolean;
+            /**
+             * Is Finished
+             * @default false
+             */
+            is_finished: boolean;
+            /** Job Folder Path */
+            job_folder_path?: string | null;
+            /**
+             * Error Message
+             * @default
+             */
+            error_message: string;
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /**
+             * Date Created
+             * Format: date-time
+             */
+            date_created: string;
+        };
+        /**
+         * JobStatus
+         * @enum {string}
+         */
+        JobStatus: "Compiling" | "Building" | "Build failed" | "Running" | "Finished" | "Run Failed";
         /**
          * Permission
          * @enum {string}
          */
-        Permission: "admin" | "get_all_users" | "get_all_roles" | "create_templates" | "get_all_templates";
+        Permission: "admin" | "get_all_users" | "get_all_roles" | "create_templates" | "get_templates" | "get_global_templates" | "get_templates" | "create_global_templates";
         /** RoleCreate */
         RoleCreate: {
             /** Name */
@@ -414,7 +492,7 @@ export interface operations {
             };
         };
     };
-    register_role_roles_create_post: {
+    create_role_roles_create_post: {
         parameters: {
             query?: never;
             header?: never;
@@ -500,7 +578,7 @@ export interface operations {
             };
         };
     };
-    get_all_roles_templates_all_get: {
+    get_all_templates_templates_my_get: {
         parameters: {
             query?: never;
             header?: never;
@@ -520,7 +598,40 @@ export interface operations {
             };
         };
     };
-    main_docker_file_upload_tester_get: {
+    create_job_jobs_create_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "multipart/form-data": components["schemas"]["Body_create_job_jobs_create_post"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["JobPublic"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    create_job_jobs_my_get: {
         parameters: {
             query?: never;
             header?: never;
@@ -535,7 +646,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": unknown;
+                    "application/json": components["schemas"]["JobPublic"][];
                 };
             };
         };
