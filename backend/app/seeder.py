@@ -12,11 +12,15 @@ INITIAL_DATA = {
         RoleCreate(
             name="Admin",
             permissions=[
-                Permission.admin,
                 Permission.get_all_roles,
                 Permission.get_all_users,
                 Permission.create_templates,
+                Permission.get_templates,
+                Permission.get_global_templates,
                 Permission.get_all_templates,
+                Permission.create_global_templates,
+                Permission.get_job_logs,
+                Permission.get_job_archive,
             ],
         )
     ],

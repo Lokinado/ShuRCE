@@ -1,12 +1,16 @@
+import asyncio
 import zlib
 from contextlib import asynccontextmanager
+from threading import Thread
 from typing import Annotated, List
+from uuid import UUID
 
-from fastapi import Depends, FastAPI, File, Form, Response, UploadFile
-from fastapi.responses import HTMLResponse
+from fastapi import Body, Depends, FastAPI, File, Form, Query, Response, UploadFile
+from fastapi.responses import FileResponse, HTMLResponse
 from fastapi.security import OAuth2PasswordRequestForm
 from sqlmodel import select
 
+from app.job_manager import JobManager
 from app.seeder import register_seeders
 
 from .auth import (
@@ -17,11 +21,20 @@ from .auth import (
     get_password_hash,
 )
 from .database import NewSession, create_db_and_tables
-from .exceptions import incorrect_username_or_password
+from .exceptions import (
+    execution_template_does_not_exist,
+    incorrect_username_or_password,
+    insufficient_permissions,
+    unauthorized_access_to_job_archive,
+    unauthorized_access_to_job_log,
+)
 from .models import (
     ExecutionTemplate,
     ExecutionTemplateCreate,
     ExecutionTemplatePublic,
+    Job,
+    JobPublic,
+    JobStatus,
     Permission,
     Role,
     RoleCreate,
@@ -31,12 +44,22 @@ from .models import (
     UserPublic,
 )
 
+job_manager: JobManager | None = None
+job_event_loop: asyncio.AbstractEventLoop | None = None
+
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
+    global job_manager, job_event_loop
     register_seeders()
     create_db_and_tables()
+    job_manager = JobManager()
+    job_event_loop = asyncio.new_event_loop()
+    Thread(
+        target=lambda: asyncio.run(job_event_loop.run_forever()), daemon=True
+    ).start()
     yield
+    job_event_loop.stop()
 
 
 app = FastAPI(lifespan=lifespan)
@@ -48,7 +71,7 @@ async def read_root() -> dict:
 
 
 # TODO: Only somebody with permission add users should be able to add roles
-@app.post("/users/register", response_model=UserPublic)
+@app.post("/v1/users/register", response_model=UserPublic)
 def register_user(session: NewSession, user: UserCreate):
     hashed_password = get_password_hash(user.password)
     extra_data = {"hashed_password": hashed_password}
@@ -59,7 +82,7 @@ def register_user(session: NewSession, user: UserCreate):
     return db_user
 
 
-@app.post("/users/all")
+@app.post("/v1/users/all")
 def get_all_users(
     session: NewSession,
     user: Annotated[User, Depends(Has(Permission.get_all_users))],
@@ -70,14 +93,14 @@ def get_all_users(
         return []
 
 
-@app.get("/users/me/", response_model=UserPublic)
+@app.get("/v1/users/me/", response_model=UserPublic)
 async def read_users_me(
     current_user: Annotated[User, Depends(get_current_user)],
 ):
     return current_user
 
 
-@app.post("/token")
+@app.post("/v1/token")
 async def login_for_access_token(
     response: Response,
     session: NewSession,
@@ -94,8 +117,8 @@ async def login_for_access_token(
 
 
 # TODO: Only somebody with permission create roles should be able to add roles
-@app.post("/roles/create", response_model=RolePublic)
-def register_role(session: NewSession, role: RoleCreate):
+@app.post("/v1/roles/create", response_model=RolePublic)
+def create_role(session: NewSession, role: RoleCreate):
     db_role = Role.model_validate(role)
     session.add(db_role)
     session.commit()
@@ -103,7 +126,7 @@ def register_role(session: NewSession, role: RoleCreate):
     return db_role
 
 
-@app.post("/roles/all")
+@app.post("/v1/roles/all")
 def get_all_roles(
     session: NewSession,
     user: Annotated[User, Depends(Has(Permission.get_all_roles))],
@@ -115,21 +138,28 @@ def get_all_roles(
 
 
 # It must be done like that due to multi-part form
-@app.post("/templates/create", response_model=ExecutionTemplatePublic)
+@app.post("/v1/templates/create", response_model=ExecutionTemplatePublic)
 async def create_execution_template(
     session: NewSession,
     user: Annotated[User, Depends(Has(Permission.create_templates))],
     name: Annotated[str, Form(min_length=4, max_length=15)],
-    dockerfile: UploadFile = File(),
+    is_global: Annotated[bool, Form()],
+    dockerfile: Annotated[UploadFile, File()],
 ):
     file_content = await dockerfile.read()
 
     if len(file_content) == 0:
         print("Empty")
 
+    if is_global:
+        if not user.has_permission(Permission.create_global_templates):
+            raise insufficient_permissions
+
     template = {
         "name": name,
+        "is_global": is_global if is_global else False,
         "compressed_dockerfile": zlib.compress(file_content),
+        "owner_id": user.id,
     }
 
     db_template = ExecutionTemplate.model_validate(template)
@@ -139,26 +169,108 @@ async def create_execution_template(
     return db_template
 
 
-@app.get("/templates/all")
-def get_all_roles(
+@app.get("/v1/templates/my")
+def get_all_templates(
     session: NewSession,
-    user: Annotated[User, Depends(Has(Permission.get_all_templates))],
+    user: Annotated[User, Depends(Has(Permission.get_templates))],
 ) -> List[ExecutionTemplatePublic]:
+    get_templates_query = None
+    if user.has_permission(Permission.get_global_templates):
+        get_templates_query = select(ExecutionTemplate).where(
+            ExecutionTemplate.owner_id == user.id or ExecutionTemplate.is_global
+        )
+    else:
+        get_templates_query = select(ExecutionTemplate).where(
+            ExecutionTemplate.owner_id == user.id
+        )
+
     try:
-        return session.exec(select(ExecutionTemplate)).all()
+        return session.exec(get_templates_query).all()
     except:
         return []
 
 
-@app.get("/docker-file-upload-tester")
-async def main():
-    content = """
-<body>
-<form action="/templates/create" enctype="multipart/form-data" method="post" name="template">
-<input name="name" type="text">
-<input name="dockerfile" type="file">
-<input type="submit">
-</form>
-</body>
-    """
-    return HTMLResponse(content=content)
+@app.post("/v1/jobs/create", response_model=JobPublic)
+async def create_job(
+    session: NewSession,
+    user: Annotated[User, Depends(Has(Permission.get_all_templates))],
+    code_file: Annotated[UploadFile, File()],
+    is_zipped: Annotated[bool, Body()],
+    contains_dockerfile: Annotated[bool, Body()],
+    template_id: Annotated[UUID, Body()],
+):
+
+    if not session.get(ExecutionTemplate, template_id):
+        raise execution_template_does_not_exist
+
+    job = {
+        "status": JobStatus.compiling,
+        "is_zipped": is_zipped,
+        "contains_dockerfile": contains_dockerfile,
+        "template_id": template_id,
+        "owner_id": user.id,
+    }
+
+    db_job = Job.model_validate(job)
+    session.add(db_job)
+    session.commit()
+    session.refresh(db_job)
+
+    code_content = await code_file.read()
+    code_filename = code_file.filename
+
+    asyncio.run_coroutine_threadsafe(
+        job_manager.create_job(session, db_job, code_filename, code_content),
+        job_event_loop,
+    )
+
+    # asyncio.create_task(job_manager.create_job(session, db_job, code_file))
+
+    return db_job
+
+
+# TODO: Fix permissions
+@app.get("/v1/jobs/my")
+async def get_my_jobs(
+    session: NewSession,
+    user: Annotated[User, Depends(Has(Permission.get_all_templates))],
+) -> List[JobPublic]:
+    get_jobs_query = select(Job).where(Job.owner_id == user.id)
+    try:
+        return session.exec(get_jobs_query).all()
+    except:
+        return []
+
+
+@app.get("/v1/jobs/logs")
+def get_logs_from_job_id(
+    session: NewSession,
+    user: Annotated[User, Depends(Has(Permission.get_job_logs))],
+    job_id: Annotated[UUID, Query()],
+):
+    job = session.get(Job, job_id)
+    if job.owner_id == user.id:
+        log_name = f"job_logs_{job.id}"
+        return FileResponse(
+            job.logs_path, media_type="application/octet-stream", filename=log_name
+        )
+    else:
+        raise unauthorized_access_to_job_log
+
+
+@app.get("/v1/jobs/archive")
+def get_archive_from_job_id(
+    session: NewSession,
+    user: Annotated[User, Depends(Has(Permission.get_job_archive))],
+    job_id: Annotated[UUID, Query()],
+):
+    job = session.get(Job, job_id)
+    if job.owner_id == user.id:
+        archive_name = f"job_archive_{job.id}.tar"
+        return FileResponse(
+            job.archive_path,
+            media_type="application/octet-stream",
+            filename=archive_name,
+        )
+    else:
+        raise unauthorized_access_to_job_archive

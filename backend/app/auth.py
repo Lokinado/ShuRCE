@@ -106,8 +106,10 @@ class Has:
         self.permission = permission
 
     def __call__(self, user: Annotated[User, Depends(get_current_user)]):
-        if user.role:
-            if self.permission in user.role.permissions:
-                return user
+        if user.has_permission(self.permission):
+            return user
+        # if user.role:
+        #     if self.permission in user.role.permissions:
+        #         return user
         # TODO: CREATE SENSIBLE EXCEPTIONS
         raise insufficient_permissions
