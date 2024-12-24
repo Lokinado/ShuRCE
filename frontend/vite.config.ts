@@ -6,11 +6,7 @@ export default defineConfig({
   plugins: [react()],
   server:{
     proxy:{
-      '/token': 'http://0.0.0.0:8081',
-      '/users': 'http://0.0.0.0:8081',
-      '/templates': 'http://0.0.0.0:8081',
-      '/jobs': 'http://0.0.0.0:8081',
-      '/roles': 'http://0.0.0.0:8081'
+      '/v1': 'http://0.0.0.0:8081',
     }
   }
 })
