@@ -7,3 +7,5 @@ export type ExecutionTemplatePublic = components["schemas"]["ExecutionTemplatePu
 export type JobPublic = components["schemas"]["JobPublic"];
 
 export type RolePublic = components["schemas"]["RolePublic"];
+
+export type Permission = components["schemas"]["Permission"];
