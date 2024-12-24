@@ -19,6 +19,7 @@ class Permission(str, Enum):
     get_global_templates = "get_global_templates"
     get_all_templates = "get_templates"
     create_global_templates = "create_global_templates"
+    get_jobs = "get_jobs"
     get_job_logs = "get_job_logs"
     get_job_archive = "get_job_archive"
 
@@ -207,7 +208,7 @@ class Job(JobBase, table=True):
 class JobPublic(JobBase):
     id: UUID
     owner_id: UUID
-    template: ExecutionTemplate
+    template: ExecutionTemplatePublic
     date_created: datetime
 
 

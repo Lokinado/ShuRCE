@@ -19,6 +19,7 @@ INITIAL_DATA = {
                 Permission.get_global_templates,
                 Permission.get_all_templates,
                 Permission.create_global_templates,
+                Permission.get_jobs,
                 Permission.get_job_logs,
                 Permission.get_job_archive,
             ],

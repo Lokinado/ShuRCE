@@ -3,6 +3,7 @@ import os
 import zlib
 from threading import Thread
 from typing import Annotated
+from uuid import UUID
 
 import docker
 import docker.errors
@@ -136,47 +137,54 @@ class JobManager:
     def compile_job_folder(self, session: Session, job: Job):
         pass
 
-    async def create_job(
-        self, session: Session, job: Job, code_filename: str, code_content: bytes
-    ):
-        job_folder_path = os.path.join(self.jobs_path, str(job.id))
+    async def create_job(self, job_id: UUID, code_filename: str, code_content: bytes):
+        with Session(engine) as session:
+            job = session.get(Job, job_id)
+            job_folder_path = os.path.join(self.jobs_path, str(job_id))
 
-        if not os.path.exists(job_folder_path):
-            os.makedirs(job_folder_path)
-        else:
-            raise job_folder_already_exists
+            if not os.path.exists(job_folder_path):
+                os.makedirs(job_folder_path)
+            else:
+                raise job_folder_already_exists
 
-        job.job_folder_path = job_folder_path
+            job.job_folder_path = job_folder_path
 
-        session.add(job)
-        session.commit()
+            try:
+                session.add(job)
+                session.commit()
+            except Exception as e:
+                print(type(e))
+                print(e)
+                return
 
-        # TODO: Move these with statements to other functions
-        try:
-            code_path = os.path.join(job_folder_path, code_filename)
-            with open(code_path, "w") as code_destination:
-                code_destination.write(code_content.decode("utf-8"))
-        except Exception as e:
-            print(type(e))
-            print(e)
-            return
+            # TODO: Move these with statements to other functions
+            try:
+                code_path = os.path.join(job_folder_path, code_filename)
+                with open(code_path, "w") as code_destination:
+                    code_destination.write(code_content.decode("utf-8"))
+            except Exception as e:
+                print(type(e))
+                print(e)
+                return
 
-        try:
-            dockerfile_path = os.path.join(job_folder_path, "Dockerfile")
-            with open(dockerfile_path, "w") as dockerfile:
-                dockerfile_content = zlib.decompress(job.template.compressed_dockerfile)
-                dockerfile.write(dockerfile_content.decode("utf-8"))
-        except Exception as e:
-            print(type(e))
-            print(e)
-            return
+            try:
+                dockerfile_path = os.path.join(job_folder_path, "Dockerfile")
+                with open(dockerfile_path, "w") as dockerfile:
+                    dockerfile_content = zlib.decompress(
+                        job.template.compressed_dockerfile
+                    )
+                    dockerfile.write(dockerfile_content.decode("utf-8"))
+            except Exception as e:
+                print(type(e))
+                print(e)
+                return
 
-        # This sleep assures that fast api sends request before build
-        # This sleep returns control to main thread and then fast api
-        # can send request with successful job creation
-        # may mess up with many async jobs
-        # await asyncio.sleep(0.01)
-        if not self.__build_job(session, job):
-            return
-        if not self.__run_built_job(session, job):
-            return
+            # This sleep assures that fast api sends request before build
+            # This sleep returns control to main thread and then fast api
+            # can send request with successful job creation
+            # may mess up with many async jobs
+            # await asyncio.sleep(0.01)
+            if not self.__build_job(session, job):
+                return
+            if not self.__run_built_job(session, job):
+                return

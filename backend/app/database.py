@@ -6,7 +6,7 @@ from sqlmodel import Session, SQLModel, create_engine
 
 db_url = config("db_url")
 
-connect_args = {"check_same_thread": False}
+connect_args = {"check_same_thread": False, "timeout": 15}
 engine = create_engine(db_url, echo=False, connect_args=connect_args)
 
 

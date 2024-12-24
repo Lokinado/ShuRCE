@@ -220,22 +220,20 @@ async def create_job(
     code_filename = code_file.filename
 
     asyncio.run_coroutine_threadsafe(
-        job_manager.create_job(session, db_job, code_filename, code_content),
+        job_manager.create_job(db_job.id, code_filename, code_content),
         job_event_loop,
     )
-
-    # asyncio.create_task(job_manager.create_job(session, db_job, code_file))
 
     return db_job
 
 
-# TODO: Fix permissions
 @app.get("/v1/jobs/my")
 async def get_my_jobs(
     session: NewSession,
-    user: Annotated[User, Depends(Has(Permission.get_all_templates))],
+    user: Annotated[User, Depends(Has(Permission.get_jobs))],
 ) -> List[JobPublic]:
     get_jobs_query = select(Job).where(Job.owner_id == user.id)
+    # get_jobs_query = select(Job)
     try:
         return session.exec(get_jobs_query).all()
     except:
