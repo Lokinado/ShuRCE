@@ -21,7 +21,7 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/users/register": {
+    "/v1/users/register": {
         parameters: {
             query?: never;
             header?: never;
@@ -31,14 +31,14 @@ export interface paths {
         get?: never;
         put?: never;
         /** Register User */
-        post: operations["register_user_users_register_post"];
+        post: operations["register_user_v1_users_register_post"];
         delete?: never;
         options?: never;
         head?: never;
         patch?: never;
         trace?: never;
     };
-    "/users/all": {
+    "/v1/users/all": {
         parameters: {
             query?: never;
             header?: never;
@@ -48,14 +48,14 @@ export interface paths {
         get?: never;
         put?: never;
         /** Get All Users */
-        post: operations["get_all_users_users_all_post"];
+        post: operations["get_all_users_v1_users_all_post"];
         delete?: never;
         options?: never;
         head?: never;
         patch?: never;
         trace?: never;
     };
-    "/users/me/": {
+    "/v1/users/me/": {
         parameters: {
             query?: never;
             header?: never;
@@ -63,7 +63,7 @@ export interface paths {
             cookie?: never;
         };
         /** Read Users Me */
-        get: operations["read_users_me_users_me__get"];
+        get: operations["read_users_me_v1_users_me__get"];
         put?: never;
         post?: never;
         delete?: never;
@@ -72,7 +72,7 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/token": {
+    "/v1/token": {
         parameters: {
             query?: never;
             header?: never;
@@ -82,14 +82,14 @@ export interface paths {
         get?: never;
         put?: never;
         /** Login For Access Token */
-        post: operations["login_for_access_token_token_post"];
+        post: operations["login_for_access_token_v1_token_post"];
         delete?: never;
         options?: never;
         head?: never;
         patch?: never;
         trace?: never;
     };
-    "/roles/create": {
+    "/v1/roles/create": {
         parameters: {
             query?: never;
             header?: never;
@@ -99,14 +99,14 @@ export interface paths {
         get?: never;
         put?: never;
         /** Create Role */
-        post: operations["create_role_roles_create_post"];
+        post: operations["create_role_v1_roles_create_post"];
         delete?: never;
         options?: never;
         head?: never;
         patch?: never;
         trace?: never;
     };
-    "/roles/all": {
+    "/v1/roles/all": {
         parameters: {
             query?: never;
             header?: never;
@@ -116,14 +116,14 @@ export interface paths {
         get?: never;
         put?: never;
         /** Get All Roles */
-        post: operations["get_all_roles_roles_all_post"];
+        post: operations["get_all_roles_v1_roles_all_post"];
         delete?: never;
         options?: never;
         head?: never;
         patch?: never;
         trace?: never;
     };
-    "/templates/create": {
+    "/v1/templates/create": {
         parameters: {
             query?: never;
             header?: never;
@@ -133,14 +133,14 @@ export interface paths {
         get?: never;
         put?: never;
         /** Create Execution Template */
-        post: operations["create_execution_template_templates_create_post"];
+        post: operations["create_execution_template_v1_templates_create_post"];
         delete?: never;
         options?: never;
         head?: never;
         patch?: never;
         trace?: never;
     };
-    "/templates/my": {
+    "/v1/templates/my": {
         parameters: {
             query?: never;
             header?: never;
@@ -148,7 +148,7 @@ export interface paths {
             cookie?: never;
         };
         /** Get All Templates */
-        get: operations["get_all_templates_templates_my_get"];
+        get: operations["get_all_templates_v1_templates_my_get"];
         put?: never;
         post?: never;
         delete?: never;
@@ -157,7 +157,7 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/jobs/create": {
+    "/v1/jobs/create": {
         parameters: {
             query?: never;
             header?: never;
@@ -167,22 +167,56 @@ export interface paths {
         get?: never;
         put?: never;
         /** Create Job */
-        post: operations["create_job_jobs_create_post"];
+        post: operations["create_job_v1_jobs_create_post"];
         delete?: never;
         options?: never;
         head?: never;
         patch?: never;
         trace?: never;
     };
-    "/jobs/my": {
+    "/v1/jobs/my": {
         parameters: {
             query?: never;
             header?: never;
             path?: never;
             cookie?: never;
         };
-        /** Create Job */
-        get: operations["create_job_jobs_my_get"];
+        /** Get My Jobs */
+        get: operations["get_my_jobs_v1_jobs_my_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/jobs/logs": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get Logs From Job Id */
+        get: operations["get_logs_from_job_id_v1_jobs_logs_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/jobs/archive": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get Archive From Job Id */
+        get: operations["get_archive_from_job_id_v1_jobs_archive_get"];
         put?: never;
         post?: never;
         delete?: never;
@@ -195,8 +229,8 @@ export interface paths {
 export type webhooks = Record<string, never>;
 export interface components {
     schemas: {
-        /** Body_create_execution_template_templates_create_post */
-        Body_create_execution_template_templates_create_post: {
+        /** Body_create_execution_template_v1_templates_create_post */
+        Body_create_execution_template_v1_templates_create_post: {
             /** Name */
             name: string;
             /** Is Global */
@@ -207,8 +241,8 @@ export interface components {
              */
             dockerfile: string;
         };
-        /** Body_create_job_jobs_create_post */
-        Body_create_job_jobs_create_post: {
+        /** Body_create_job_v1_jobs_create_post */
+        Body_create_job_v1_jobs_create_post: {
             /**
              * Code File
              * Format: binary
@@ -224,8 +258,8 @@ export interface components {
              */
             template_id: string;
         };
-        /** Body_login_for_access_token_token_post */
-        Body_login_for_access_token_token_post: {
+        /** Body_login_for_access_token_v1_token_post */
+        Body_login_for_access_token_v1_token_post: {
             /** Grant Type */
             grant_type?: string | null;
             /** Username */
@@ -241,6 +275,29 @@ export interface components {
             client_id?: string | null;
             /** Client Secret */
             client_secret?: string | null;
+        };
+        /** ExecutionTemplate */
+        ExecutionTemplate: {
+            /** Name */
+            name: string;
+            /** Is Global */
+            is_global: boolean;
+            /**
+             * Id
+             * Format: uuid
+             */
+            id?: string;
+            /**
+             * Compressed Dockerfile
+             * Format: binary
+             */
+            compressed_dockerfile: string;
+            /** Owner Id */
+            owner_id?: string | null;
+            /** Date Created */
+            date_created?: string | null;
+            /** Date Updated */
+            date_updated?: string | null;
         };
         /** ExecutionTemplatePublic */
         ExecutionTemplatePublic: {
@@ -288,11 +345,23 @@ export interface components {
              * @default
              */
             error_message: string;
+            /** Container Id */
+            container_id?: string | null;
+            /** Logs Path */
+            logs_path?: string | null;
+            /** Archive Path */
+            archive_path?: string | null;
             /**
              * Id
              * Format: uuid
              */
             id: string;
+            /**
+             * Owner Id
+             * Format: uuid
+             */
+            owner_id: string;
+            template: components["schemas"]["ExecutionTemplate"];
             /**
              * Date Created
              * Format: date-time
@@ -308,7 +377,7 @@ export interface components {
          * Permission
          * @enum {string}
          */
-        Permission: "admin" | "get_all_users" | "get_all_roles" | "create_templates" | "get_templates" | "get_global_templates" | "get_templates" | "create_global_templates";
+        Permission: "get_all_users" | "get_all_roles" | "create_templates" | "get_templates" | "get_global_templates" | "get_templates" | "create_global_templates" | "get_job_logs" | "get_job_archive";
         /** RoleCreate */
         RoleCreate: {
             /** Name */
@@ -386,7 +455,7 @@ export interface operations {
             };
         };
     };
-    register_user_users_register_post: {
+    register_user_v1_users_register_post: {
         parameters: {
             query?: never;
             header?: never;
@@ -419,7 +488,7 @@ export interface operations {
             };
         };
     };
-    get_all_users_users_all_post: {
+    get_all_users_v1_users_all_post: {
         parameters: {
             query?: never;
             header?: never;
@@ -439,7 +508,7 @@ export interface operations {
             };
         };
     };
-    read_users_me_users_me__get: {
+    read_users_me_v1_users_me__get: {
         parameters: {
             query?: never;
             header?: never;
@@ -459,7 +528,7 @@ export interface operations {
             };
         };
     };
-    login_for_access_token_token_post: {
+    login_for_access_token_v1_token_post: {
         parameters: {
             query?: never;
             header?: never;
@@ -468,7 +537,7 @@ export interface operations {
         };
         requestBody: {
             content: {
-                "application/x-www-form-urlencoded": components["schemas"]["Body_login_for_access_token_token_post"];
+                "application/x-www-form-urlencoded": components["schemas"]["Body_login_for_access_token_v1_token_post"];
             };
         };
         responses: {
@@ -492,7 +561,7 @@ export interface operations {
             };
         };
     };
-    create_role_roles_create_post: {
+    create_role_v1_roles_create_post: {
         parameters: {
             query?: never;
             header?: never;
@@ -525,7 +594,7 @@ export interface operations {
             };
         };
     };
-    get_all_roles_roles_all_post: {
+    get_all_roles_v1_roles_all_post: {
         parameters: {
             query?: never;
             header?: never;
@@ -545,7 +614,7 @@ export interface operations {
             };
         };
     };
-    create_execution_template_templates_create_post: {
+    create_execution_template_v1_templates_create_post: {
         parameters: {
             query?: never;
             header?: never;
@@ -554,7 +623,7 @@ export interface operations {
         };
         requestBody: {
             content: {
-                "multipart/form-data": components["schemas"]["Body_create_execution_template_templates_create_post"];
+                "multipart/form-data": components["schemas"]["Body_create_execution_template_v1_templates_create_post"];
             };
         };
         responses: {
@@ -578,7 +647,7 @@ export interface operations {
             };
         };
     };
-    get_all_templates_templates_my_get: {
+    get_all_templates_v1_templates_my_get: {
         parameters: {
             query?: never;
             header?: never;
@@ -598,7 +667,7 @@ export interface operations {
             };
         };
     };
-    create_job_jobs_create_post: {
+    create_job_v1_jobs_create_post: {
         parameters: {
             query?: never;
             header?: never;
@@ -607,7 +676,7 @@ export interface operations {
         };
         requestBody: {
             content: {
-                "multipart/form-data": components["schemas"]["Body_create_job_jobs_create_post"];
+                "multipart/form-data": components["schemas"]["Body_create_job_v1_jobs_create_post"];
             };
         };
         responses: {
@@ -631,7 +700,7 @@ export interface operations {
             };
         };
     };
-    create_job_jobs_my_get: {
+    get_my_jobs_v1_jobs_my_get: {
         parameters: {
             query?: never;
             header?: never;
@@ -647,6 +716,68 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["JobPublic"][];
+                };
+            };
+        };
+    };
+    get_logs_from_job_id_v1_jobs_logs_get: {
+        parameters: {
+            query: {
+                job_id: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": unknown;
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    get_archive_from_job_id_v1_jobs_archive_get: {
+        parameters: {
+            query: {
+                job_id: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": unknown;
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
                 };
             };
         };
