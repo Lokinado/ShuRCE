@@ -1,26 +1,28 @@
-import { Button, Group, Table } from "@mantine/core";
-import CreateUserModal from "./modals/CreateUserModal"
+import { Button, Group, Pill, Table } from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
 import { useEffect, useState } from "react";
 import { RootState } from "../state/store";
 import { useDispatch, useSelector } from "react-redux";
 import { fetchClient } from '../openapi-client';
 import { notifications } from '@mantine/notifications';
-import { update } from '../state/users/UsersSlice';
+import { update } from '../state/roles/RolesSlice';
+import CreateRoleModal from "./modals/CreateRoleModal";
+import { Permission } from "../backend-types";
+import { RolesMapping } from "../Types/RolesMapping";
 
-const Users = () => {
+const Roles = () => {
   const [isLoading, setLoading] = useState(true);
   const [opened, { open, close }] = useDisclosure(false);
-  let users = useSelector((state: RootState) => state.usersReducer.users);
+  let roles = useSelector((state: RootState) => state.rolesReducer.roles);
   const dispatch = useDispatch();
 
   useEffect(()=>{
-    fetchClient.POST("/v1/users/all", {}).then((value) =>{
+    fetchClient.POST("/v1/roles/all", {}).then((value) =>{
       if(value.error){
         setLoading(false)
         notifications.show({
-          title: 'Can not load users',
-          message: 'User has insufficient permissions to load all users',
+          title: 'Can not load roles',
+          message: 'User has insufficient permissions to load all roles',
         })
       }
       if(value.data){
@@ -32,12 +34,16 @@ const Users = () => {
 
   if(isLoading) return "Loading..."
   else {
-    if(!users) users = []
+    if(!roles) roles = []
 
-    const rows = users.map((user) => (
-      <Table.Tr key={user.id}>
-        <Table.Td>{user.email}</Table.Td>
-        <Table.Td>{user.role ? user.role.name : "No role assigned"}</Table.Td>
+    const renderPills = (permissions: Permission[]) => {
+        return permissions.map((perm) => <Pill>{Object.keys(RolesMapping).find(key => RolesMapping[key] === perm)}</Pill>)
+    }
+
+    const rows = roles.map((role) => (
+      <Table.Tr key={role.id}>
+        <Table.Td>{role.name}</Table.Td>
+        <Table.Td>{renderPills(role.permissions)}</Table.Td>
         <Table.Td>
           <Button variant="filled">Edit</Button>
           <Button variant="filled" color="red">Delete</Button>
@@ -50,16 +56,16 @@ const Users = () => {
         <Group justify="flex-end" mt="md">
           <Button onClick={open}>+</Button>
         </Group> 
-        <CreateUserModal 
+        <CreateRoleModal 
           opened={opened}
           onClose={close}
         />
-        {users.length === 0 ? <Group justify='center'>There are no users. Add user with button above.</Group> : 
+        {roles.length === 0 ? <Group justify='center'>There are no roles. Add role with button above.</Group> : 
           <Table>
             <Table.Thead>
               <Table.Tr>
-                <Table.Th>Email</Table.Th>
-                <Table.Th>Role</Table.Th>
+                <Table.Th>Name</Table.Th>
+                <Table.Th>Permissions</Table.Th>
                 <Table.Th>Operation</Table.Th>
               </Table.Tr>
             </Table.Thead>
@@ -70,4 +76,4 @@ const Users = () => {
   }
 }
 
-export default Users;
+export default Roles;

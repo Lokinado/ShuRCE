@@ -3,13 +3,15 @@ import authReducer from "./auth/AuthSlice";
 import templatesReducer from "./execution-templates/TemplatesSlice";
 import jobsReducer from "./jobs/JobsSlice";
 import rolesReducer from "./roles/RolesSlice";
+import usersReducer from "./users/UsersSlice";
 
 export const store = configureStore({
   reducer: {
     authReducer,
     templatesReducer,
     jobsReducer,
-    rolesReducer
+    rolesReducer,
+    usersReducer
   }
 });
 

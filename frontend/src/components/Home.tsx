@@ -7,6 +7,8 @@ import { IconTemplate, IconUserCog, IconSparkles, IconArchive, IconSettings, Ico
 import SingleFileExecution from './SingleFileExecution'
 import Jobs from './Jobs'
 import Users from './Users'
+import Roles from './Roles'
+import Archive from './Archive'
 
 
 const Home = () => {
@@ -21,7 +23,7 @@ const Home = () => {
           <Stack gap="xs">
             <StyledLink Icon={IconFileCode} to="/" text="Single file execution"/>
             <StyledLink Icon={IconTemplate} to="execution-templates" text="Execution Templates"/>
-            <StyledLink Icon={IconUsersGroup} to="manage" text="Users"/>
+            <StyledLink Icon={IconUsersGroup} to="users" text="Users"/>
             <StyledLink Icon={IconUserCog} to="roles" text="Roles"/>
             <StyledLink Icon={IconSparkles} to="jobs" text="Jobs"/>
             <StyledLink Icon={IconArchive} to="archive" text="Archive"/>
@@ -36,7 +38,9 @@ const Home = () => {
               <Route path="/" element={<SingleFileExecution/>}/>
               <Route path="/execution-templates" element={<ExecutionTemplates />}/>
               <Route path="/jobs" element={<Jobs />}/>
-              <Route path="/manage" element={<Users />}/>
+              <Route path="/users" element={<Users />}/>
+              <Route path="/roles" element={<Roles />}/>
+              <Route path="/archive" element={<Archive />}/>
             </Routes>
         </AppShell.Main>
       </AppShell>

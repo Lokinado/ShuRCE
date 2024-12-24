@@ -52,7 +52,7 @@ const CreateExecutionTemplateModal: React.FunctionComponent<CreateExecutionTempl
     try{
       //TODO: Remove magic strings
       const formData = new FormData(event.currentTarget);
-      const resp = await fetch("/templates/create", {
+      const resp = await fetch("/v1/templates/create", {
         method: 'POST',
         body: formData
       });

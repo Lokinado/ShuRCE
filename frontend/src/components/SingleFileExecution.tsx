@@ -12,13 +12,12 @@ const SingleFileExecution = () => {
   const [selectedTemplate, setSelectedTemplate] = useState<ComboboxItem | null>(null);
   const [selectedTemplateError, setSelectedTemplateError] = useState('');
   const [codeFile, setCodeFile] = useState<File | null>(null);
-  const [codeFileError, setCodeFileError] = useState('');
   let templates = useSelector((state: RootState) => state.templatesReducer.templates);
 
   const dispatch = useDispatch();
 
   useEffect(()=>{
-    fetchClient.GET("/templates/my", {}).then((value) =>{
+    fetchClient.GET("/v1/templates/my", {}).then((value) =>{
       if(value.error){
         setLoading(false)
         notifications.show({
@@ -60,7 +59,7 @@ const SingleFileExecution = () => {
       formData.append("template_id",templates[template_index].id)
       formData.append("is_zipped","true")
       formData.append("contains_dockerfile","true")
-      const resp = await fetch("/jobs/create", {
+      const resp = await fetch("/v1/jobs/create", {
         method: 'POST',
         body: formData
       });
@@ -121,7 +120,6 @@ const SingleFileExecution = () => {
               mt='md'
               label="Code file"
               name='code_file'
-              error={codeFileError}
               withAsterisk
               clearable
               value={codeFile} 

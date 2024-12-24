@@ -16,7 +16,7 @@ const ExecutionTemplates = () => {
   const dispatch = useDispatch();
 
   useEffect(()=>{
-    fetchClient.GET("/templates/my", {}).then((value) =>{
+    fetchClient.GET("/v1/templates/my", {}).then((value) =>{
       if(value.error){
         setLoading(false)
         notifications.show({

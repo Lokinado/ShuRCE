@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { notifications } from '@mantine/notifications';
-import { Checkbox, FileInput, Group, Modal, PasswordInput, Select, TextInput, Tooltip } from '@mantine/core';
+import { Group, Modal, PasswordInput, Select, TextInput } from '@mantine/core';
 import { Button } from '@mantine/core';
 import { fetchClient } from '../../openapi-client'
 import { useDispatch, useSelector } from 'react-redux';
@@ -21,12 +21,12 @@ const CreateUserModal: React.FunctionComponent<CreateUserModalProps> = ({
   const [emailError, setEmailError] = useState('');
   const [password, setPassword] = useState('');
   const [passwordError, setPasswordError] = useState('');
-  const [roleName, setRoleName] = useState<string | null>('');
+  const [roleName, setRoleName] = useState<string | null>(null);
   const roles = useSelector((state: RootState) => state.rolesReducer.roles);
   const dispatch = useDispatch();
 
   useEffect(()=>{
-    fetchClient.POST("/roles/all", {}).then((value) =>{
+    fetchClient.POST("/v1/roles/all", {}).then((value) =>{
       if(value.error){
         setLoading(false)
         notifications.show({
@@ -64,7 +64,7 @@ const CreateUserModal: React.FunctionComponent<CreateUserModalProps> = ({
     const {
       data,
       error,
-    } = await fetchClient.POST("/users/register", {
+    } = await fetchClient.POST("/v1/users/register", {
       body: {
         email: email,
         password: password,
@@ -73,35 +73,45 @@ const CreateUserModal: React.FunctionComponent<CreateUserModalProps> = ({
     });
 
     if(data){
-      console.log(data)
+      setEmail('')
+      setEmailError('')
+      setPassword('')
+      setPasswordError('')
+      setRoleName(null)
+
+      notifications.show({
+        title: 'User created successfully!',
+        message: `Created new User with email ${email}`,
+      })
+
       onClose()
     }
 
     if(error) {
       if(error.detail){
-        if("detail" in error){
-          console.log("CASE 1")
-        } else if(error.detail.length == 1){
-          console.log("CASE 2")
-        } else {
-          console.log("CASE 3")
-        }
-      } else {
-        console.log("CASE 4")
+        const newEmailError: string[] = [];
+        const newPasswordError: string[] = [];
+        error.detail.forEach((message)=>{
+          const propertyName = message.loc.pop()
+          if(propertyName === "password") {
+            newPasswordError.push(message.msg.split(", ")[1]);
+          } else if (propertyName === "email"){
+            newEmailError.push(message.msg.split(", ")[1]);
+          }
+        })
+        setEmailError(newEmailError.join(" "))
+        setPasswordError(newPasswordError.join(" "))
       }
       return; 
     }
   }
-
-  console.log(roles)
-  console.log(roles?.map((role) => role.name))
 
   if(isLoading) return (<></>)
   else return (
     <Modal 
       opened={opened} 
       onClose={onClose}
-      title="New Execution Template" 
+      title="New User" 
       overlayProps={{
         backgroundOpacity: 0.55,
         blur: 3,
@@ -132,6 +142,7 @@ const CreateUserModal: React.FunctionComponent<CreateUserModalProps> = ({
         placeholder="SecurePassword123!"
       />
       <Select
+        mt='md'
         label="Users role"
         placeholder="Pick role"
         data={roles?.map((role) => role.name)}

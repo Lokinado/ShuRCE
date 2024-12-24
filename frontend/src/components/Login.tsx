@@ -18,7 +18,7 @@ const Login = () => {
     let {
       data,
       error,
-    } = await fetchClient.POST("/token", {
+    } = await fetchClient.POST("/v1/token", {
       headers: {
         'Content-Type': 'application/x-www-form-urlencoded',
       },
@@ -37,7 +37,7 @@ const Login = () => {
     });
 
     if(data === null){
-      const response = await fetchClient.GET("/users/me/", {});
+      const response = await fetchClient.GET("/v1/users/me/", {});
       if(response.data){
         dispatch(login(response.data))
         return;
@@ -141,21 +141,6 @@ const Login = () => {
             >
               Log in
             </Button>
-
-            <Text 
-              c="var(--mantine-color-dimmed)" 
-              size="sm" 
-              ta="center"
-            >
-              <Text 
-                component="span" 
-                c="var(--mantine-primary-color)"
-                style={{ cursor: 'pointer' }}
-                onClick={() => { /* Handle forgot password */ }}
-              >
-                Forgot password?
-              </Text>
-            </Text>
           </Stack>
         </form>
       </Paper>

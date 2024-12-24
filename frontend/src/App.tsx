@@ -19,7 +19,7 @@ const App = () => {
   const dispatch = useDispatch();
   
   useEffect(()=>{
-    fetchClient.GET("/users/me/", {}).then((value) =>{
+    fetchClient.GET("/v1/users/me/", {}).then((value) =>{
       if(value.error){
         setLoading(false)
       }
