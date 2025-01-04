@@ -10,9 +10,6 @@ from fastapi.responses import FileResponse, HTMLResponse
 from fastapi.security import OAuth2PasswordRequestForm
 from sqlmodel import select
 
-from app.job_manager import JobManager
-from app.seeder import register_seeders
-
 from .auth import (
     Has,
     authenticate_user,
@@ -28,6 +25,7 @@ from .exceptions import (
     unauthorized_access_to_job_archive,
     unauthorized_access_to_job_log,
 )
+from .job_manager import JobManager
 from .models import (
     ExecutionTemplate,
     ExecutionTemplateCreate,
@@ -43,6 +41,7 @@ from .models import (
     UserCreate,
     UserPublic,
 )
+from .seeder import register_seeders
 
 job_manager: JobManager | None = None
 job_event_loop: asyncio.AbstractEventLoop | None = None

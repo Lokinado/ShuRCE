@@ -4,7 +4,7 @@ from decouple import config
 from fastapi import Depends
 from sqlmodel import Session, SQLModel, create_engine
 
-db_url = config("db_url")
+db_url = config("db_url", default="sqlite:///database.db")
 
 connect_args = {"check_same_thread": False, "timeout": 15}
 engine = create_engine(db_url, echo=False, connect_args=connect_args)

@@ -1,6 +1,6 @@
 from fastapi import WebSocket
 
-from app.models import User, WebSocketConnection, WebsocketMessage
+from .models import User, WebSocketConnection, WebsocketMessage
 
 
 class WebsocketConnectionManager:

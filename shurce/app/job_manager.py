@@ -11,10 +11,9 @@ import docker.types
 from fastapi import File, UploadFile
 from sqlmodel import Session, select
 
-from app.models import Job, JobStatus
-
 from .database import engine
 from .exceptions import job_folder_already_exists, job_folder_does_not_exist
+from .models import Job, JobStatus
 from .websocket_connection_manager import WebsocketConnectionManager
 
 

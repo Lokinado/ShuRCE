@@ -1,10 +1,9 @@
 from sqlalchemy import event
 from sqlmodel import Session, select
 
-from app.auth import get_password_hash
-from app.models import Permission, Role, RoleCreate, User, UserCreate
-
+from .auth import get_password_hash
 from .database import engine
+from .models import Permission, Role, RoleCreate, User, UserCreate
 
 INITIAL_DATA = {
     "user": [UserCreate(email="Admin", password="root", role_id=None)],
