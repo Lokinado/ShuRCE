@@ -276,29 +276,6 @@ export interface components {
             /** Client Secret */
             client_secret?: string | null;
         };
-        /** ExecutionTemplate */
-        ExecutionTemplate: {
-            /** Name */
-            name: string;
-            /** Is Global */
-            is_global: boolean;
-            /**
-             * Id
-             * Format: uuid
-             */
-            id?: string;
-            /**
-             * Compressed Dockerfile
-             * Format: binary
-             */
-            compressed_dockerfile: string;
-            /** Owner Id */
-            owner_id?: string | null;
-            /** Date Created */
-            date_created?: string | null;
-            /** Date Updated */
-            date_updated?: string | null;
-        };
         /** ExecutionTemplatePublic */
         ExecutionTemplatePublic: {
             /** Name */
@@ -361,7 +338,7 @@ export interface components {
              * Format: uuid
              */
             owner_id: string;
-            template: components["schemas"]["ExecutionTemplate"];
+            template: components["schemas"]["ExecutionTemplatePublic"];
             /**
              * Date Created
              * Format: date-time
@@ -377,7 +354,7 @@ export interface components {
          * Permission
          * @enum {string}
          */
-        Permission: "get_all_users" | "get_all_roles" | "create_templates" | "get_templates" | "get_global_templates" | "get_templates" | "create_global_templates" | "get_job_logs" | "get_job_archive";
+        Permission: "get_all_users" | "get_all_roles" | "create_templates" | "get_templates" | "get_global_templates" | "get_templates" | "create_global_templates" | "get_jobs" | "get_job_logs" | "get_job_archive";
         /** RoleCreate */
         RoleCreate: {
             /** Name */
