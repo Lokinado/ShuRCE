@@ -1,4 +1,6 @@
 import asyncio
+import os
+import pathlib
 import zlib
 from contextlib import asynccontextmanager
 from threading import Thread
@@ -269,4 +271,7 @@ def get_archive_from_job_id(
         raise unauthorized_access_to_job_archive
 
 
-app.mount("/", StaticFiles(directory="static", html=True), name="static")
+path = pathlib.Path(__file__).parent.resolve()
+static_folder_path = os.path.join(path, "..", "static")
+
+app.mount("/", StaticFiles(directory=static_folder_path, html=True), name="static")

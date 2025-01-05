@@ -5,6 +5,9 @@ setup(
     version="0.1.0",  # Version number
     packages=find_packages(),  # Automatically find packages in your structure
     include_package_data=True,
+    package_data={
+        "shurce": ["static/**/*"],  # Include all files under `static`
+    },
     install_requires=[
         "annotated-types==0.7.0",
         "anyio==4.6.2.post1",
@@ -24,6 +27,7 @@ setup(
         "httptools==0.6.4",
         "httpx==0.27.2",
         "idna==3.10",
+        "importlib_resources==6.5.2",
         "Jinja2==3.1.4",
         "markdown-it-py==3.0.0",
         "MarkupSafe==3.0.2",

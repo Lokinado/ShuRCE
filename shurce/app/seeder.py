@@ -6,7 +6,7 @@ from .database import engine
 from .models import Permission, Role, RoleCreate, User, UserCreate
 
 INITIAL_DATA = {
-    "user": [UserCreate(email="Admin", password="root", role_id=None)],
+    "user": [UserCreate(email="admin@shurce.com", password="Admin@Shu1", role_id=None)],
     "role": [
         RoleCreate(
             name="Admin",

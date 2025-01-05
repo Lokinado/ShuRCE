@@ -17,8 +17,8 @@ def validate_email(v):
     return v
 
 
-# Email = Annotated[str, AfterValidator(validate_email)]
-Email = str
+Email = Annotated[str, AfterValidator(validate_email)]
+# Email = str
 
 
 def is_required_length(v):
@@ -27,7 +27,6 @@ def is_required_length(v):
 
 
 def contains_small_letter(v):
-    print(v)
     assert re.search(r"[a-z]", v), "Must contain small letter"
     return v
 
@@ -80,5 +79,5 @@ def validate_password(v, handler: ValidatorFunctionWrapHandler, info: Validation
     return validated_self
 
 
-# Password = Annotated[str, WrapValidator(validate_password)]
-Password = str
+Password = Annotated[str, WrapValidator(validate_password)]
+# Password = str
