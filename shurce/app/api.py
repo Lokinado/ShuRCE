@@ -8,6 +8,7 @@ from uuid import UUID
 from fastapi import Body, Depends, FastAPI, File, Form, Query, Response, UploadFile
 from fastapi.responses import FileResponse, HTMLResponse
 from fastapi.security import OAuth2PasswordRequestForm
+from fastapi.staticfiles import StaticFiles
 from sqlmodel import select
 
 from .auth import (
@@ -62,11 +63,6 @@ async def lifespan(app: FastAPI):
 
 
 app = FastAPI(lifespan=lifespan)
-
-
-@app.get("/", tags=["root"])
-async def read_root() -> dict:
-    return {"message": "Welcome to your blog!"}
 
 
 # TODO: Only somebody with permission add users should be able to add roles
@@ -271,3 +267,6 @@ def get_archive_from_job_id(
         )
     else:
         raise unauthorized_access_to_job_archive
+
+
+app.mount("/", StaticFiles(directory="static", html=True), name="static")
